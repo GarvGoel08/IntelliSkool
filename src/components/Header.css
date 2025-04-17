@@ -1,0 +1,155 @@
+.head{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    position: fixed;
+    width: 100%;
+    height: 80px;
+    z-index: 10;
+background: #ECEEF3;
+    top: 0;
+}
+
+.logo{
+    color: #0052B4;
+    font-family: Jost;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.btns{
+    display: flex;
+    gap: 1rem;
+}
+
+.sign-in-btn{
+    display: flex;
+    width: 104px;
+    height: 43.141px;
+    padding: 10px 18px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 6.163px;
+    border: 0.77px solid #2E3A59;
+    color: var(--Basic-700, #2E3A59);
+    font-family: Jost;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 21.57px;
+}
+
+.sign-in-btn:hover {
+    background-color: #2E3A59;
+    color: #FFF;
+    border-color: #2E3A59;
+    transition: all 0.3s ease;
+}
+
+.sign-in-btn:active {
+    background-color: #1f293e;
+    color: #FFF;
+    border-color: #1f293e;
+}
+
+
+.sign-up-btn{
+    display: flex;
+    width: 104px;
+    height: 43.141px;
+    padding: 10px 18px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 6.163px;
+    border: 0.77px solid #7E8EB7;
+    background: #2E3A59;
+    color: #FFF;
+    font-family: Jost;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 21.57px;
+}
+
+.sign-up-btn:hover {
+    background-color: #3a4868;
+    border-color: #3a4868;
+    color: #FFF;
+    transition: all 0.3s ease;
+}
+
+.sign-up-btn:active {
+    background-color: #1f293e;
+    border-color: #1f293e;
+    color: #FFF;
+}
+
+.right{
+    display: flex;
+    align-items: center;
+    gap: 57px;
+}
+
+.links{
+    display: flex;
+    align-items: center;
+    gap: 37px;
+    text-decoration: none;
+}
+
+.links a{
+    color: var(--Basic-700, #2E3A59);
+    font-family: Jost;
+    font-size:  20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+}
+
+/* Hamburger styles */
+.hamburger {
+    display: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Responsive dropdown styles */
+@media screen and (max-width: 768px) {
+    .hamburger {
+        display: block;
+        color:  var(--Basic-700, #2E3A59);
+    }
+
+    .right {
+        display: none;
+        position: absolute;
+        top: 90px;
+        right: 0;
+        width: 100%;
+        background: #ECEEF3;
+        flex-direction: column;
+        padding: 1rem 2rem;
+        gap: 2rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .right.open {
+        display: flex;
+    }
+
+    .links {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .btns {
+        flex-direction: column;
+        display: flex;
+        gap: 1rem;
+    }
+}
