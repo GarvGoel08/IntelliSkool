@@ -15,7 +15,9 @@ export default function Meet() {
   const [lookDuration, setLookDuration] = useState(0);
   const id = "garv123-room";
   const [socket, setSocket] = useState(null);
-  const [isTabActive, setIsTabActive] = useState(true);
+  const [showPopup, setShowPopup] = useState(false);
+  const [shopPopupTime, setShopPopupTime] = useState(0);
+  const timerRef = useRef(null);
 
   useEffect(() => {
     const handleWindowFocus = () => {
@@ -62,59 +64,35 @@ export default function Meet() {
       if (!modelsLoaded || !webcamRef.current || !webcamRef.current.video) {
         return;
       }
-
+    
       const video = webcamRef.current.video;
-
+    
       const result = await faceapi
         .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
         .withFaceLandmarks();
-
-      if (result) {
-        const landmarks = result.landmarks;
-        const leftEye = landmarks.getLeftEye();
-        const rightEye = landmarks.getRightEye();
-
-        const avgEyeX =
-          (leftEye.map((pt) => pt._x).reduce((a, b) => a + b, 0) /
-            leftEye.length +
-            rightEye.map((pt) => pt._x).reduce((a, b) => a + b, 0) /
-              rightEye.length) /
-          2;
-        const avgEyeY =
-          (leftEye.map((pt) => pt._y).reduce((a, b) => a + b, 0) /
-            leftEye.length +
-            rightEye.map((pt) => pt._y).reduce((a, b) => a + b, 0) /
-              rightEye.length) /
-          2;
-
-        const canvasCenterX = video.videoWidth / 2;
-        const canvasCenterY = video.videoHeight / 2;
-
-        setCurrentLoc(
-          `X: ${Math.abs(avgEyeX - canvasCenterX)} Y: ${Math.abs(
-            avgEyeY - canvasCenterY
-          )}`
-        );
-        console.log(currentLoc);
-
-        const isLooking =
-          Math.abs(avgEyeX - canvasCenterX) < 50 &&
-          Math.abs(avgEyeY - canvasCenterY) < 100;
-        setIsLookingAtCamera(isLooking);
-        if (!isLooking) {
-          alert("Please look at the camera");
+    
+      if (!result && shopPopupTime <= 0 && !timerRef.current) {
+        setShowPopup(true);
+        setShopPopupTime(60);
+    
+        timerRef.current = setInterval(() => {
+          setShopPopupTime((prev) => {
+            if (prev <= 1) {
+              clearInterval(timerRef.current);
+              timerRef.current = null;
+              setShowPopup(false);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      } else if (result) {
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
         }
-        if (socket) {
-          if (isLooking) {
-            socket.emit("look-back");
-          } else {
-            socket.emit("look-away");
-          }
-        }
-      } else {
-        socket.emit("look-away");
-        setIsLookingAtCamera(false);
-        setLookDuration(0);
+        setShopPopupTime(0);
+        setShowPopup(false);
       }
     };
 
@@ -167,7 +145,6 @@ export default function Meet() {
     const initializeZegoSDK = async () => {
       const kitToken = await generateKitToken();
       const zc = ZegoUIKitPrebuilt.create(kitToken);
-      // Wait for 10 seconds before joining room
       zc.joinRoom({
         container: meetRef.current,
         scenario: {
@@ -181,27 +158,27 @@ export default function Meet() {
     initializeZegoSDK();
   }, []);
 
-  // useEffect(() => {
-  //   const socket = io(`${process.env.REACT_APP_SOCKET_URL}`);
-  //   setSocket(socket);
-  //   socket.on("connect", () => {
-  //     console.log("Connected to Socket.io server");
-  //     socket.emit("connect-room", { roomID: id });
-  //   });
+  useEffect(() => {
+    const socket = io(`http://localhost:8080`);
+    setSocket(socket);
+    socket.on("connect", () => {
+      console.log("Connected to Socket.io server");
+      socket.emit("connect-room", { roomID: id, userID: "Candidate" });
+    });
 
-  //   socket.on("disconnect", () => {
-  //     console.log("Disconnected from Socket.io server");
-  //   });
+    socket.on("disconnect", () => {
+      console.log("Disconnected from Socket.io server");
+    });
 
-  //   return () => {
-  //     socket.disconnect();
-  //   };
-  // }, []);
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   return (
     <div>
       <Webcam
-        style={{ visibility: "visible", position: "absolute" }}
+        style={{ visibility: "hidden", position: "absolute" }}
         audio={false}
         screenshotFormat="image/jpeg"
         onUserMedia={() => {
@@ -209,6 +186,19 @@ export default function Meet() {
         }}
         ref={webcamRef}
       />
+      <div style={{ zIndex: '1000', position: 'absolute', bottom: '4px', right: '4px' }} className="fixed bottom-4 right-4 bg-white shadow-xl border border-gray-200 rounded-xl p-4 w-72 z-50 animate-fade-in">
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+          Are you still there?
+        </h3>
+        <p className="text-sm text-gray-600 mb-4">
+          Auto closing in {shopPopupTime} seconds
+        </p>
+        <button
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+        >
+          Yes, Still There!
+        </button>
+      </div>
     </div>
   );
 }
