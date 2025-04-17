@@ -18,17 +18,38 @@ export default function Meet() {
   const [showPopup, setShowPopup] = useState(false);
   const [shopPopupTime, setShopPopupTime] = useState(0);
   const timerRef = useRef(null);
+  const [popupMode, setPopupMode] = useState("Tab");
 
   useEffect(() => {
     const handleWindowFocus = () => {
-      if (socket) {
-        socket.emit("back-in-tab");
+      if (popupMode == "Tab") {
+
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+        setShopPopupTime(0);
+        setShowPopup(false);
       }
     };
 
     const handleWindowBlur = () => {
-      if (socket) {
-        socket.emit("out-of-tab");
+      setPopupMode("Tab");
+      if (shopPopupTime <= 0 && !timerRef.current) {
+        setShopPopupTime(30);
+        setShowPopup(true);
+
+        timerRef.current = setInterval(() => {
+          setShopPopupTime((prev) => {
+            if (prev <= 1) {
+              clearInterval(timerRef.current);
+              timerRef.current = null;
+              setShowPopup(false);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
       }
     };
 
@@ -51,7 +72,6 @@ export default function Meet() {
         ]);
         setModelsLoaded(true);
       } catch (error) {
-        console.error("Failed to load models:", error);
         setNotification({
           message:
             "Failed to load models. Please check the console for errors.",
@@ -64,19 +84,22 @@ export default function Meet() {
       if (!modelsLoaded || !webcamRef.current || !webcamRef.current.video) {
         return;
       }
-    
+
       const video = webcamRef.current.video;
-    
+
       const result = await faceapi
         .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
         .withFaceLandmarks();
-    
+
       if (!result && shopPopupTime <= 0 && !timerRef.current) {
-        setShowPopup(true);
-        setShopPopupTime(60);
-    
+        setShopPopupTime(70);
+        setPopupMode("Face");
+
         timerRef.current = setInterval(() => {
           setShopPopupTime((prev) => {
+            if (prev <= 60 && !showPopup) {
+              setShowPopup(true);
+            }
             if (prev <= 1) {
               clearInterval(timerRef.current);
               timerRef.current = null;
@@ -86,7 +109,7 @@ export default function Meet() {
             return prev - 1;
           });
         }, 1000);
-      } else if (result) {
+      } else if (result && popupMode == "Face") {
         if (timerRef.current) {
           clearInterval(timerRef.current);
           timerRef.current = null;
@@ -100,8 +123,6 @@ export default function Meet() {
       const intervalId = setInterval(() => {
         if (webcamRef.current && webcamRef.current.video?.readyState === 4) {
           detectFace();
-        } else {
-          console.log("Webcam not ready yet");
         }
       }, 1000);
 
@@ -115,7 +136,7 @@ export default function Meet() {
     let result = "";
     if (result) return result;
     var chars =
-        "12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP",
+      "12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP",
       maxPos = chars.length,
       i;
     len = len || 5;
@@ -159,7 +180,7 @@ export default function Meet() {
   }, []);
 
   useEffect(() => {
-    const socket = io(`http://localhost:8080`);
+    const socket = io('https://intelliskoolbackend.onrender.com');
     setSocket(socket);
     socket.on("connect", () => {
       console.log("Connected to Socket.io server");
@@ -174,6 +195,12 @@ export default function Meet() {
       socket.disconnect();
     };
   }, []);
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  useEffect(() => {
+    if (shopPopupTime === 1) {
+      window.location.href = "https://google.com";
+    }
+  }, [shopPopupTime])
 
   return (
     <div>
@@ -181,24 +208,39 @@ export default function Meet() {
         style={{ visibility: "hidden", position: "absolute" }}
         audio={false}
         screenshotFormat="image/jpeg"
-        onUserMedia={() => {
-          console.log("Webcam ready");
-        }}
         ref={webcamRef}
       />
-      <div style={{ zIndex: '1000', position: 'absolute', bottom: '4px', right: '4px' }} className="fixed bottom-4 right-4 bg-white shadow-xl border border-gray-200 rounded-xl p-4 w-72 z-50 animate-fade-in">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">
-          Are you still there?
-        </h3>
-        <p className="text-sm text-gray-600 mb-4">
-          Auto closing in {shopPopupTime} seconds
-        </p>
-        <button
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          Yes, Still There!
-        </button>
-      </div>
+      {showPopup && (
+        <div style={{ zIndex: '10000', position: 'absolute', top: '0px', left: '0px', height: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.6)' }} className="fixed w-72 z-50 animate-fade-in">
+          <div className="bg-white z-[1000001] rounded-lg shadow-lg p-4 w-full max-w-sm mx-auto">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              Are you still there?
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              We have detected that you have drifted away from this meet, to ensure fairness in attendance, we disconnect offenders who do not response in time.
+            </p>
+            <div className="flex flex-row gap-4 justify-between items-center">
+              <button
+                className="bg-blue-600 flex-grow text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                onClick={() => {
+                  setShowPopup(false);
+                  setShopPopupTime(0);
+                  if (timerRef.current) {
+                    clearInterval(timerRef.current);
+                    timerRef.current = null;
+                  }
+                }}
+              >
+                Yes, Still There!
+              </button>
+              <div className="border-blue-600  border text-blue-600 px-4 py-2 rounded-full transition">
+                {shopPopupTime}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }
