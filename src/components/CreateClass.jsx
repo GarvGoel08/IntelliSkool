@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
 import Header from '../components/Header';
 import Classroom from './Classroom';
 
@@ -9,9 +10,10 @@ function CreateClass() {
   const [className, setClassName] = useState('');
   const [classDescription, setClassDescription] = useState('');
 
+  const navigate = useNavigate(); // Initialize the navigate function
+
   const token = document.cookie.replace(
-    /(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/,
-    '$1'
+    /(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/,'$1'
   );
 
   const fetchClassRoomData = async () => {
@@ -93,12 +95,16 @@ function CreateClass() {
     fetchUserData();
   }, []);
 
+  // Handle the classroom click to navigate to the teacher dashboard
+  const handleClassroomClick = (classroomId) => {
+    navigate('/teacher-dashboard/'); // Redirect to the teacher dashboard
+  };
+
   return (
     <div className='bg-white w-[100vw] h-[100vh] absolute top-0 left-0 text-black'>
       <Header />
       <div className='pt-[100px] px-4'>
         <div className='border border-gray-300 rounded-xl h-[85vh] flex flex-col'>
-
           {/* Header */}
           <div onClick={() => setShowCreateForm(false)} className='flex items-center h-[60px] px-2 py-2 text-xl font-semibold border-b border-gray-300 cursor-pointer'>
             My Classes
@@ -108,11 +114,13 @@ function CreateClass() {
           <div className={`flex flex-wrap gap-4 transition-all duration-500 overflow-y-auto ${showCreateForm ? 'h-0 opacity-0' : 'flex-grow opacity-100 p-4'}`}>
             {classrooms && classrooms.length > 0 ? (
               classrooms.map((classroom) => (
-                <Classroom
-                  keyId={classroom._id}
-                  title={classroom.className}
-                  desc={classroom.classDescription}
-                />
+                <div key={classroom._id} onClick={() => handleClassroomClick(classroom._id)}>
+                  <Classroom
+                    keyId={classroom._id}
+                    title={classroom.className}
+                    desc={classroom.classDescription}
+                  />
+                </div>
               ))
             ) : (
               <p className="text-gray-500">No classrooms found.</p>
