@@ -153,3 +153,16 @@
         gap: 1rem;
     }
 }
+
+.avatar-btn {
+    display: flex;
+    align-items: center;
+  }
+  
+  .avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 20px;
+  }
+  
