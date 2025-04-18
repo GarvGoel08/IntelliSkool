@@ -1,0 +1,121 @@
+.assignment-card {
+    width: 300px;
+    border-radius: 16px;
+    background-color: #fef7ff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+    font-family: "Inter", sans-serif;
+  }
+  
+  .card-header {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    gap: 12px;
+    position: relative;
+  }
+  
+  .avatar {
+    background-color: #e8dcfa;
+    color: #3b2a9f;
+    font-weight: 600;
+    font-size: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .card-text {
+    flex-grow: 1;
+    text-align: left;
+    color: var(--M3-sys-light-on-surface, var(--Schemes-On-Surface, #1D1B20));
+    font-family: var(--Title-Medium-Font, Roboto);
+    font-size: 11.022px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16.533px;
+    letter-spacing: 0.103px;
+  }
+  
+  .title {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  .subtitle {
+    font-size: 12px;
+    margin: 2px 0 0;
+    color: #555;
+  }
+  
+  .options {
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: auto;
+  }
+  
+  .card-image {
+    background-color: #d9d9d9;
+    height: 140px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .card-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+  
+  .card-body {
+    padding: 16px;
+    text-align: left;
+  }
+  
+  .card-heading {
+    color: var(--M3-sys-light-on-surface, var(--Schemes-On-Surface, #1D1B20));
+    font-family: var(--Body-Large-Font, Roboto);
+    font-size: 15.022px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20.533px; /* 150% */
+    letter-spacing: 0.344px;
+    margin-bottom: 24px;
+  }
+  
+  .card-description {
+    color: var(--M3-sys-light-on-surface-variant, var(--Schemes-On-Surface-Variant, #49454F));
+    font-family: var(--Body-Medium-Font, Roboto);
+    font-size: 13.644px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 17.778px; /* 142.857% */
+    letter-spacing: 0.172px;
+    margin-bottom: 16px;
+  }
+  
+  .btn-flex{
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .card-button {
+    background-color: #0057d9;
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 24px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+  }
+  
+  .card-button:hover {
+    background-color: #0044b0;
+  }
+  

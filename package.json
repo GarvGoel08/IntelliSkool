@@ -12,6 +12,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.4",
     "@zegocloud/zego-uikit-prebuilt": "^1.11.0",
+    "aos": "^2.3.4",
     "face-api.js": "^0.22.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

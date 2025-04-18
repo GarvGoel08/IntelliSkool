@@ -9,7 +9,7 @@ export default function Header() {
 
   return (
     <div className='head'>
-      <div className="logo">IntelliSkool</div>
+      <div className="logo-nav">IntelliSkool</div>
       
       <div className='hamburger' onClick={toggleMenu}>
         ☰

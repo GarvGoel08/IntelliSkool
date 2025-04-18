@@ -7,11 +7,11 @@
     width: 100%;
     height: 80px;
     z-index: 10;
-background: #ECEEF3;
+    background: #ECEEF3;
     top: 0;
 }
 
-.logo{
+.logo-nav{
     color: #0052B4;
     font-family: Jost;
     font-size: 32px;
@@ -70,7 +70,7 @@ background: #ECEEF3;
     background: #2E3A59;
     color: #FFF;
     font-family: Jost;
-    font-size: 18px;
+    font-size: 14px;
     font-style: normal;
     font-weight: 500;
     line-height: 21.57px;
