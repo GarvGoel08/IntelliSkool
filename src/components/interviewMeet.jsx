@@ -92,7 +92,7 @@ export default function Meet() {
         .withFaceLandmarks();
 
       if (!result && shopPopupTime <= 0 && !timerRef.current) {
-        setShopPopupTime(65);
+        setShopPopupTime(70);
         setPopupMode("Face");
 
         timerRef.current = setInterval(() => {
@@ -109,7 +109,7 @@ export default function Meet() {
             return prev - 1;
           });
         }, 1000);
-      } else if (result) {
+      } else if (result && popupMode == "Face") {
         if (timerRef.current) {
           clearInterval(timerRef.current);
           timerRef.current = null;
@@ -179,22 +179,22 @@ export default function Meet() {
     initializeZegoSDK();
   }, []);
 
-  useEffect(() => {
-    const socket = io('https://intelliskoolbackend.onrender.com');
-    setSocket(socket);
-    socket.on("connect", () => {
-      console.log("Connected to Socket.io server");
-      socket.emit("connect-room", { roomID: id, userID: "Candidate" });
-    });
+  // useEffect(() => {
+  //   const socket = io('https://intelliskoolbackend.onrender.com');
+  //   setSocket(socket);
+  //   socket.on("connect", () => {
+  //     console.log("Connected to Socket.io server");
+  //     socket.emit("connect-room", { roomID: id, userID: "Candidate" });
+  //   });
 
-    socket.on("disconnect", () => {
-      console.log("Disconnected from Socket.io server");
-    });
+  //   socket.on("disconnect", () => {
+  //     console.log("Disconnected from Socket.io server");
+  //   });
 
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
   useEffect(() => {
     if (shopPopupTime === 1) {
@@ -204,43 +204,6 @@ export default function Meet() {
 
   return (
     <div>
-      <Webcam
-        style={{ visibility: "hidden", position: "absolute" }}
-        audio={false}
-        screenshotFormat="image/jpeg"
-        ref={webcamRef}
-      />
-      {showPopup && (
-        <div style={{ zIndex: '10000', position: 'absolute', top: '0px', left: '0px', height: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.6)' }} className="fixed w-72 z-50 animate-fade-in">
-          <div className="bg-white z-[1000001] rounded-lg shadow-lg p-4 w-full max-w-sm mx-auto">
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              Are you still there?
-            </h3>
-            <p className="text-sm text-gray-600 mb-4">
-              We have detected that you have drifted away from this meet, to ensure fairness in attendance, we disconnect offenders who do not response in time.
-            </p>
-            <div className="flex flex-row gap-4 justify-between items-center">
-              <button
-                className="bg-blue-600 flex-grow text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-                onClick={() => {
-                  setShowPopup(false);
-                  setShopPopupTime(0);
-                  if (timerRef.current) {
-                    clearInterval(timerRef.current);
-                    timerRef.current = null;
-                  }
-                }}
-              >
-                Yes, Still There!
-              </button>
-              <div className="border-blue-600  border text-blue-600 px-4 py-2 rounded-full transition">
-                {shopPopupTime}
-              </div>
-            </div>
-
-          </div>
-        </div>
-      )}
     </div>
   );
 }
